@@ -1,5 +1,4 @@
-const contractAddress = '0x2037C8E25fC0004eB15cfcba5d14283E3599c848';
-const ABI = [
+[
 	{
 		"anonymous": false,
 		"inputs": [
@@ -402,4 +401,4 @@ const ABI = [
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-];
+]

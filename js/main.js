@@ -1,9 +1,11 @@
-let _web3 = null, 
-            accs=[], 
-            contract = null, 
-            connected = false
-            methods = [],
-            defaultGasLimit = '670000';
+let _web3 = null,
+    ABI = null;
+    contractAddress = '',
+    accs=[], 
+    contract = null, 
+    connected = false
+    methods = [],
+    defaultGasLimit = '670000';
 
         let ddown = $('#ddown');
 
@@ -16,6 +18,7 @@ let _web3 = null,
 
         $('#connect').on('click', start);
         $('#storage-value').on('click', getStorageValue);
+        $('#abiFile').on('change', loadAbiFromFile);
         ddown.on('change', prepMethodParams);
         ddown.on('click', ddownClicked);
 
@@ -61,7 +64,6 @@ let _web3 = null,
         }
 
         function prepMethodParams(e) {
-            debugger;
             let i = +$(this).val();
             if(i < 0) return;
             let meth = methods[i], 
@@ -188,7 +190,38 @@ let _web3 = null,
             .finally(_ => _s('send completed.', 'n'));
         }
 
+        function getContractAddress() {
+            contractAddress = $('#caddress').val();
+        }
+
+        function loadAbiFromTextArea() {
+            let abi = $('#abi').val();
+            if(abi) ABI = JSON.parse(abi);
+        }
+
+        function loadAbiFromFile(ev) {
+            let frdr = new FileReader();
+            frdr.onload = e => ABI = JSON.parse(e.target.result);
+            frdr.readAsText(ev.target.files[0]);
+        }
+
         function start() {
+            getContractAddress();
+            loadAbiFromTextArea();
+          
+            if(!contractAddress) {
+                console.log('please provide contract address');
+                _s('No contract address provided!', 'e')
+                return;
+            }
+              
+            if(!ABI) {
+                console.log('No ABI provided');
+                _s('No ABI provided!', 'e');
+                return;
+            }
+
+
             if (typeof window.ethereum !== 'undefined') {
               console.log('MetaMask is installed!');
               ethereum.enable();
@@ -206,18 +239,7 @@ let _web3 = null,
             accs = await ethereum.request({ method: 'eth_accounts' });
             console.log('Accounts:', accs, contractAddress);
             _web3.eth.defaultAccount = accs[0];
-            // let abi = $('#abi').val();
-            if(!ABI) {
-                console.log('No ABI provided');
-                return;
-            }
-
-            // let address = $('#address').val();
-            if(!contractAddress) {
-                console.log('please provide contract address');
-                return;
-            }
-
+            
             // initialize contract object with ABI and Address
             contract = new _web3.eth.Contract(ABI, contractAddress);
             // contract.once('Transfer', {
