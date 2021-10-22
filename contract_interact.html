@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1-rc.0/web3.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/tool.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Interact with contract (via proxy!)</h1>
+        <div class="sub-container">
+            <div class="d-none">
+                <h4>Contract Address</h4>
+                <input id="address" type="text">
+
+                <h4>Target Contract ABI</h4>
+                <textarea id="abi"></textarea>
+            </div>
+            <div id="main">
+                <button id="connect" class="btn btn-success">Try Connect</button>
+            </div>
+        </div>
+        <div class="sub-container">
+            <div id="status-div">
+                <pre><h4>Status:</h4></pre>
+                <span id="status"></span>
+            </div>
+            <div id="result-div">
+                <pre><h4>Result:</h4></pre>
+                <span id="result"></span>
+            </div>
+        </div>
+        <div class="form-group sub-container">
+            <div class="general ss-container" id="gen">
+              <label>All Methods From ABI</label>  
+              <select class="form-control" id="ddown">
+                <option value="-1">-------- Select Method ---------</option>
+              </select>
+              <div id="gen-ips"></div>
+              <button id="callorsend" class="btn btn-danger v-spaced d-none">Call</button>
+            </div>
+            <div id="misc" class="ss-container">
+                <h4>Access Storage/State values directly with slot numbers!</h4>
+                <label>Target Contract Adress to read values from</label>
+                <input type="text" class="form-control" id="c-address" placeholder="contract address here...">
+                <label>Slot Number (like, 0,1,.. etc)</label>
+                <input type="text" class="form-control" id="storage-value-ip" placeholder="slot index here...">
+                <button id="storage-value" class="btn btn-primary v-spaced">Get Storage Value At</button>
+            </div>
+
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script type="text/javascript" src="./js/constants.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>

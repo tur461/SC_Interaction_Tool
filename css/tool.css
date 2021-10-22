@@ -1,0 +1,44 @@
+
+.sub-container, .ss-container {
+	box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+	margin: 10px;
+	padding: 4px;
+}
+
+#status-div, #result-div {
+	width: 50%;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	padding: 6px;
+}
+
+.general {
+	margin: 40px 1px 40px 1px;
+}	
+
+.status-e {
+	border: 2px solid red !important;
+}
+.status-s {
+	border: 2px solid lime !important;	
+}
+.status-n {
+	border: 2px solid blue !important;
+}
+
+.v-spaced {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+button {
+}
+
+input, label, button, pre {
+	display: inline-block;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
