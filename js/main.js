@@ -46,10 +46,10 @@ let _web3 = null,
             methods = ABI.filter(a => a.type === 'function')
                 .map(b => {
                     return {
-                        ips: b.inputs.map(ip => { return {name: ip.name, type: ip.type}}),
+                        inputs: b.inputs.map(ip => { return {name: ip.name, type: ip.type}}),
                         name: b.name,
-                        mut: b.stateMutability === 'view' ? !1 : !0,
-                        pay: b.stateMutability === 'payable' ? !0 : !1,
+                        mutable: b.stateMutability === 'view' ? !1 : !0,
+                        payable: b.stateMutability === 'payable' ? !0 : !1,
                     }
                 })
         }
@@ -73,7 +73,7 @@ let _web3 = null,
             
             genIps.html('');
 
-            meth.ips.forEach(ip => {
+            meth.inputs.forEach(ip => {
                 inp = $('<input>')
                         .attr('id', ip.name)
                         .attr('class', 'form-control ips')
@@ -86,7 +86,7 @@ let _web3 = null,
             btn.off('click', send);
             btn.off('click', call);
 
-            if(meth.mut) {
+            if(meth.mutable) {
                 genIps.append($('<label></label>').text('Gas'));
                 genIps.append(
                     $('<input>')
@@ -98,6 +98,11 @@ let _web3 = null,
             } else {
                 btn.on('click', call);
                 btn.text('Call');
+            }
+
+            // incomplete functionality
+            if(meth.payable) {
+                // add input for send value
             }
 
             btn.data('index', i);
