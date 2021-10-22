@@ -260,6 +260,7 @@ let _web3 = null,
 
         
         function getStorageValue() {
+            _web3 = _web3 || new Web3(window.ethereum);
             let index = $('#storage-value-ip').val();
             let address = $('#c-address').val() || contractAddress;
             if(!index) {
@@ -268,8 +269,8 @@ let _web3 = null,
             }
             _web3.eth.getStorageAt(address, +index)
                 .then(res => {
-                    console.log('Success:', res, _web3.utils.toAscii(res))
-                    _r(res, 's');
+                    console.log('Success:', res, convert(res))
+                    _r(`raw: ${res}, text: ${convert(res)}`, 's');
                 })
                 .catch(e => {
                     console.log('error:', e);
