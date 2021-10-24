@@ -16,7 +16,7 @@
   <body>
     <div class="container">
       <pre><h1>Interact with contract&nbsp;</h1><h6>(eg., directly or via proxy!)</h6></pre>
-      <div class="sub-container">
+      <div class="sub-container" id="contract-prep-container">
         <div class="form-group">
           <pre><h4>Contract Address&nbsp;</h4><h6>(of proxy if using for the same)</h6></pre>
           <input
@@ -37,7 +37,7 @@
           <button id="connect" class="btn btn-success">Try Connect</button>
         </div>
       </div>
-      <div class="sub-container">
+      <div class="sub-container" id="all-status-container">
         <div id="status-div">
           <pre><span>Status:</span></pre>
           <pre><span id="status"></span></pre>
@@ -48,8 +48,8 @@
         </div>
       </div>
       <div class="form-group sub-container">
-        <div class="general ss-container" id="gen">
-          <label>All Methods From ABI</label>
+        <div class="general ss-container" id="contract-meth-container">
+          <label>All Methods From ABI (select one!)</label>
           <select class="form-control" id="ddown">
             <option value="-1">-------- Select Method ---------</option>
           </select>

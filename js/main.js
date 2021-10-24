@@ -5,7 +5,9 @@ let _web3 = null,
     contract = null, 
     connected = false
     methods = [],
-    defaultGasLimit = '670000';
+    defaultGasLimit = '670000',
+    autoScrollTime = 3250, // 3.25 s
+    targetId = '';
 
         let ddown = $('#ddown');
 
@@ -30,16 +32,36 @@ let _web3 = null,
             ddown.off('click', ddownClicked);
         }
 
+        function autoScroll(w) {
+            window.location.hash = '#all-status-container';
+            if(w === 'e')
+                setTimeout(_ => window.location.hash = targetId, autoScrollTime);
+        }
+
+        function post(op) {
+            $(op.id1).attr('class', '');
+            $(op.id1).addClass('status-' + op.w);
+            $(op.id2).text(op.msg);
+        }
+
         function _s(s, w) {
-            $('#status-div').attr('class', '');
-            $('#status-div').addClass('status-' + w);
-            $('#status').text(s);
+            post({
+                id1:'#status-div',
+                id2: '#status',
+                w: w,
+                msg: s,
+            });
+            autoScroll(w);
         }
 
         function _r(r, w) {
-            $('#result-div').attr('class', '');
-            $('#result-div').addClass('status-' + w);
-            $('#result').text(r);
+            post({
+                id1:'#result-div',
+                id2: '#result',
+                w: w,
+                msg: r,
+            });
+            autoScroll(w);
         }
 
         function prepMethods() {
@@ -59,7 +81,14 @@ let _web3 = null,
                 ddown.append($("<option></option>")
                     .attr("value", i)
                     .attr('class', 'dd-item')
-                    .text(m.name))
+                    .text(
+                        `${m.name} (${
+                            (m.payable ? ' (payable)': 'non-payable')
+                            + ', ' +
+                            (m.mutable ? ' mutable': 'view')
+                        })`
+                    )
+                )
             );
         }
 
@@ -87,12 +116,26 @@ let _web3 = null,
             btn.off('click', send);
             btn.off('click', call);
 
+            // incomplete functionality
+            if(meth.payable) {
+                // add input for send value
+                genIps.append($('<label></label>').text('Payment Amount (value)'));
+                genIps.append(
+                    $('<input>')
+                    .attr('id', 'payment')
+                    .attr('name', 'payment')
+                    .attr('placeholder', 'enter eth value here...')
+                    .attr('class', 'form-control ips')
+                );
+            }
+
             if(meth.mutable) {
                 genIps.append($('<label></label>').text('Gas'));
                 genIps.append(
                     $('<input>')
                     .attr('id', 'gaslimit')
                     .attr('name', 'gaslimit')
+                    .attr('placeholder', 'enter amount of gas here...')
                     .attr('class', 'form-control ips')
                 );
                 btn.on('click', send);
@@ -102,71 +145,62 @@ let _web3 = null,
                 // btn.text('Call');
             }
 
-            // incomplete functionality
-            if(meth.payable) {
-                // add input for send value
-            }
-
             btn.data('index', i);
             btn.removeClass('d-none');
-
         }
 
         function call() {
-            let meth = methods[$(this).data('index')], 
-                ips = $('.ips'),
-                params = [],
-                err = {
-                    v: false,
-                    t: '',
-                };
-            console.log('call:', meth);
-            ips.each((_, ip) => {
-                let v = $(ip).val();
-                if(!v) {
-                    err.v = true;
-                    err.t = ip.id;
-                } else params.push(v);
-            })
-
-            if(err.v) {
-                console.log('Error:', err);
-                _s('Please fill all the ip params', 'e');
-                return;
-            }
-            
-            _s('calling, please wait...');
-            contract
-            .methods[meth.name](...params)
-            .call()
-            .then(res => {
-                console.log('call success:', res);
-                if(typeof res == 'object') res = 'success';
-                _r(res, 's');
-            })
-            .catch(e => {
-                console.log('call Error:', e);
-                _r('Call resulted into an error!!!. (please open console for details)', 'e');
-            })
-            .finally(_ => _s('Call Completed.', 'n'));
-        }
-
-        function send(e) {
+            targetId = '##contract-meth-container';
             let meth = methods[$(this).data('index')], 
                 ips = $('.ips'),
                 p = [],
                 err = {
                     level: 0,
                     ids: [],
+                    put: function(id) { ++this.level; this.ids.push(id); }
+                };
+            console.log('call:', meth);
+            ips.each((_, ip) => !$(ip).val() ? err.put(ip.id) : p.push($(ip).val()))
+
+            if(err.level > 0) {
+                console.log(`you have ${err.level} errors:`, err);
+                _s('Please fill-in all the input parameters', 'e');
+                return;
+            }
+            
+            _s('calling, please wait...');
+            try {
+                contract
+                .methods[meth.name](...p)
+                .call()
+                .then(res => {
+                    console.log('call success:', res);
+                    if(typeof res == 'object') res = 'success';
+                    _r(res, 's');
+                })
+                .catch(e => {
+                    console.log('call Error:', e);
+                    _r('Call resulted into an error!!!. (please open console for details)', 'e');
+                })
+                .finally(_ => _s('Call Completed.', 'n'));
+            } catch (e) {
+                console.log('call error:', e);
+                _s('Call resulted in an Error, please try again (ensure correct input parameters as well)!!', 'e')
+            }
+        }
+
+        function send(e) {
+            targetId = '##contract-meth-container';
+            let meth = methods[$(this).data('index')], 
+                ips = $('.ips'),
+                p = [],
+                err = {
+                    level: 0,
+                    ids: [],
+                    put: function(id) { ++this.level; this.ids.push(id); }
                 };
             
-            ips.each((_, ip) => {
-                let v = $(ip).val();
-                if(!v) {
-                    ++err.level;
-                    err.ids.push(ip.id);
-                } else p.push(v);
-            })
+            ips.each((_, ip) => !$(ip).val() ? err.put(ip.id) : p.push($(ip).val()));
             
             if(err.ids.includes('gaslimit')) {
                 --err.level;
@@ -179,40 +213,71 @@ let _web3 = null,
                 _s('Please fill-in all the input parameters', 'e');
                 return;
             }
-            let params = p.slice(0, p.length-1), gasLimit = p[p.length-1];
-            console.log('sending with params:', params); 
-            _s('sending, please wait...', 'n');
-            contract
-            .methods[meth.name](...params)
-            .send({from: accs[0], gas: gasLimit})
-            .then(res => {
-                console.log('call success:', res);
-                if(typeof res == 'object') res = 'success';
-                _r(res, 's');
-            })
-            .catch(e => {
-                console.log('call Error:', e);
-                _r('Call resulted into an error!!!. (please open console for details)', 'e');
-            })
-            .finally(_ => _s('Call Completed.', 'n'));
+
+            let f = meth.payable,
+                params = p.slice(0, p.length - (f?2:1)), 
+                gasLimit = p[p.length - 1],
+                sendOpts = { from: accs[0], gas: gasLimit };
+            
+            if(f) sendOpts['value'] = p[p.length - 2];
+            
+            console.log('sending with params:', params, 'and send options:', sendOpts); 
+            
+            _s('Calling, please wait...', 'n');
+            
+            try {
+                contract
+                .methods[meth.name](...params)
+                .send(sendOpts)
+                .then(res => {
+                    console.log('call success:', res);
+                    if(typeof res == 'object') res = 'success';
+                    _r(res, 's');
+                })
+                .catch(e => {
+                    console.log('call Error:', e);
+                    _r('Call resulted into an error!!!. (please open console for details)', 'e');
+                })
+                .finally(_ => _s('Call Completed.', 'n'));
+            } catch (e) {
+                console.log('call error:', e);
+                _s('Call resulted in an Error, please try again (ensure correct input parameters as well)!!.', 'e')
+            }
         }
 
         function getContractAddress() {
             contractAddress = $('#caddress').val();
         }
 
+        function parseABI(txt) {
+            let abi = null;
+            try {
+                abi = JSON.parse(txt);
+            } catch (e) {
+                let m = 'ABI is not in valid format!';
+                _s(m, 'e');
+                console.log(m + ':', e);
+            }
+            return abi;
+        }
+
         function loadAbiFromTextArea() {
-            let abi = $('#abi').val();
-            if(abi) ABI = JSON.parse(abi);
+            let abiTxt = $('#abi').val();
+            if(abiTxt) {
+                ABI = parseABI(abiTxt);
+                if(!ABI) throw "ABI error";
+            }
         }
 
         function loadAbiFromFile(ev) {
+            targetId = '#contract-prep-container';
             let frdr = new FileReader();
-            frdr.onload = e => ABI = JSON.parse(e.target.result);
+            frdr.onload = e => ABI = parseABI(e.target.result);
             frdr.readAsText(ev.target.files[0]);
         }
 
         function start() {
+            targetId = '#contract-prep-container';
             getContractAddress();
             loadAbiFromTextArea();
           
