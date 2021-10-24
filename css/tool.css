@@ -1,19 +1,38 @@
-.sub-container,
-.ss-container {
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+.sub-container {
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
   margin: 10px;
   padding: 4px;
 }
 
+.ss-container {
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+  padding: 4px;
+}
+
+.ss-container button {
+  margin-left: 25%;
+}
+
 #status-div,
 #result-div {
-  width: 90%;
   margin-top: 8px;
   margin-bottom: 8px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
   padding: 6px;
+}
+
+#status-div > pre:first-child,
+#result-div > pre:first-child {
+  font-size: 20px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+#status-div > pre:last-child,
+#result-div > pre:last-child {
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: 2.4rem;
+  color: maroon;
 }
 
 .general {
@@ -22,6 +41,7 @@
 
 .status-e {
   border: 2px solid red !important;
+  color: red;
 }
 .status-s {
   border: 2px solid lime !important;

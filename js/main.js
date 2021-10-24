@@ -76,6 +76,7 @@ let _web3 = null,
             meth.inputs.forEach(ip => {
                 inp = $('<input>')
                         .attr('id', ip.name)
+                        .attr('name', ip.name)
                         .attr('class', 'form-control ips')
                         .attr('placeholder', 'type ' + ip.type + ' here...');
                 lbl = $('<label></label>').text(ip.name)
@@ -91,13 +92,14 @@ let _web3 = null,
                 genIps.append(
                     $('<input>')
                     .attr('id', 'gaslimit')
+                    .attr('name', 'gaslimit')
                     .attr('class', 'form-control ips')
                 );
                 btn.on('click', send);
-                btn.text('Send');
+                // btn.text('Send');
             } else {
                 btn.on('click', call);
-                btn.text('Call');
+                // btn.text('Call');
             }
 
             // incomplete functionality
@@ -146,7 +148,7 @@ let _web3 = null,
                 console.log('call Error:', e);
                 _r('Call resulted into an error!!!. (please open console for details)', 'e');
             })
-            .finally(_ => _s('call completed.', 'n'));
+            .finally(_ => _s('Call Completed.', 'n'));
         }
 
         function send(e) {
@@ -192,7 +194,7 @@ let _web3 = null,
                 console.log('call Error:', e);
                 _r('Call resulted into an error!!!. (please open console for details)', 'e');
             })
-            .finally(_ => _s('send completed.', 'n'));
+            .finally(_ => _s('Call Completed.', 'n'));
         }
 
         function getContractAddress() {

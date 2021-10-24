@@ -15,18 +15,19 @@
   </head>
   <body>
     <div class="container">
-      <h1>Interact with contract (via proxy!)</h1>
+      <pre><h1>Interact with contract&nbsp;</h1><h6>(eg., directly or via proxy!)</h6></pre>
       <div class="sub-container">
         <div class="form-group">
-          <pre><h4>Contract Address</h4></pre>
+          <pre><h4>Contract Address&nbsp;</h4><h6>(of proxy if using for the same)</h6></pre>
           <input
             id="caddress"
             class="form-control"
             type="text"
             placeholder="type 0x prefixed address here..."
+            name="caddress"
           />
 
-          <pre><h4>Target Contract ABI</h4></pre>
+          <pre><h4>Contract ABI&nbsp;</h4><h6>(of impelementation if using for proxy)</h6></pre>
           <pre style="display: block"><h5>By File</h5></pre>
           <input id="abiFile" class="form-control" type="file" />
           <pre style="display: block"><h5>OR By Text</h5></pre>
@@ -38,12 +39,12 @@
       </div>
       <div class="sub-container">
         <div id="status-div">
-          <pre><h4>Status:</h4></pre>
-          <span id="status"></span>
+          <pre><span>Status:</span></pre>
+          <pre><span id="status"></span></pre>
         </div>
         <div id="result-div">
-          <pre><h4>Result:</h4></pre>
-          <span id="result"></span>
+          <pre><span>Result:</span></pre>
+          <pre><span id="result"></span></pre>
         </div>
       </div>
       <div class="form-group sub-container">
@@ -53,8 +54,8 @@
             <option value="-1">-------- Select Method ---------</option>
           </select>
           <div id="gen-ips"></div>
-          <button id="callorsend" class="btn btn-danger v-spaced d-none">
-            Call
+          <button id="callorsend" class="btn btn-info v-spaced d-none">
+            CALL THE METHOD!
           </button>
         </div>
         <div id="misc" class="ss-container">
@@ -65,6 +66,7 @@
             class="form-control"
             id="c-address"
             placeholder="contract address here..."
+            name="c-address"
           />
           <label>Slot Number (like, 0,1,.. etc)</label>
           <input
@@ -72,6 +74,7 @@
             class="form-control"
             id="storage-value-ip"
             placeholder="slot index here..."
+            name="storage-value-ip"
           />
           <button id="storage-value" class="btn btn-primary v-spaced">
             Get Storage Value At
