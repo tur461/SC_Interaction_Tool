@@ -1,9 +1,11 @@
-1. install live-server with npm:
+# 🚀 Thank you for visiting!
 
-npm i -g live-server
+### Usage
 
-2. then in root folder run:
-
-live-server
-
-3. Open the url in web browser where metamask is installed.
+```
+npm i
+npm run start
+# or
+yarn
+yarn start
+```
