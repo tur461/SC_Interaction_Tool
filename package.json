@@ -1,0 +1,23 @@
+{
+  "name": "sc_interaction_tool",
+  "version": "1.0.0",
+  "description": "1. install live-server with npm:",
+  "main": "index.js",
+  "dependencies": {
+    "live-server": "^1.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tur461/SC_Interaction_Tool.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tur461/SC_Interaction_Tool/issues"
+  },
+  "homepage": "https://github.com/tur461/SC_Interaction_Tool#readme"
+}
