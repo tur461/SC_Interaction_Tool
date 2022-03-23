@@ -8,6 +8,20 @@ let _web3 = null,
     defaultGasLimit = '670000',
     autoScrollTime = 3250, // 3.25 s
     targetId = '';
+let _ip_values = [];
+let _ip_names = [];
+let _ip_types = [];
+let _meth_name = '';
+
+let contractAddr = '0x0AE675C5917c1dab986A17a145D6D5dA00a8bD3f';
+let address = '0x47e18C4d1e23027FEd38D9a1CCA82E11a7D42cab';
+
+function reset_params() {
+    _ip_values = [];
+    _ip_names = [];
+    _ip_types = [];
+    _meth_name = '';
+}
 
         let ddown = $('#ddown');
 
@@ -93,6 +107,7 @@ let _web3 = null,
         }
 
         function prepMethodParams(e) {
+            reset_params();
             let i = +$(this).val();
             if(i < 0) return;
             let meth = methods[i], 
@@ -101,8 +116,10 @@ let _web3 = null,
                 inp = null;
             
             genIps.html('');
-
+            _meth_name = meth.name;
             meth.inputs.forEach(ip => {
+                _ip_names.push(ip.name);
+                _ip_types.push(ip.type);
                 inp = $('<input>')
                         .attr('id', ip.name)
                         .attr('name', ip.name)
@@ -169,6 +186,7 @@ let _web3 = null,
             }
             
             _s('calling, please wait...');
+            _ip_values = p;
             try {
                 contract
                 .methods[meth.name](...p)
@@ -224,7 +242,7 @@ let _web3 = null,
             console.log('sending with params:', params, 'and send options:', sendOpts); 
             
             _s('Calling, please wait...', 'n');
-            
+            _ip_values = params;
             try {
                 contract
                 .methods[meth.name](...params)
@@ -307,6 +325,7 @@ let _web3 = null,
         }
 
         async function connect() {
+            console.log('connecting....');
             _web3 = new Web3(window.ethereum);
             accs = await ethereum.request({ method: 'eth_accounts' });
             console.log('Accounts:', accs, contractAddress);
@@ -350,3 +369,53 @@ let _web3 = null,
                 })
                 .finally(_ => _s('getting storage value completed.', 'n'));     
         }
+
+        function getipvals() {
+            _ip_values = [];
+            $('.ips').each((_, ip) => {
+                $(ip).attr('name') !== 'gaslimit' &&
+                _ip_values.push($(ip).val())
+            })
+        }
+
+        function setEstimationGs() {
+            getContractAddress();
+            getipvals();
+        
+            _web3 = _web3 || new Web3(window.ethereum);
+            var func = `${_meth_name}(${_ip_types.join(',')})`; // "stake(address,uint256,bool,bool)"
+            
+            var methodSignature = _web3.eth.abi.encodeFunctionSignature(func);
+            // console.log('ip', _ip_values, _ip_types, _ip_names);
+            // console.log('web3', _web3);
+            // console.log('accs[0]',accs[0], 'contract', contractAddress);
+            let dd = _ip_types.map((t, i) => {
+                return _web3.eth.abi.encodeParameter(t, _ip_values[i]);
+            });
+
+            var data = methodSignature //method signature
+                + dd.map(d => d.substring(2)).join('');
+
+            estimateGas(_web3, accs[0], contractAddress, data, (err, estimatedGas) => {
+                if(err) {
+                    console.log(err);
+                    $('#estimated-gas-val').html('error: open console');
+                    return;
+                }
+                console.log("estimatedGas: " + estimatedGas);
+                $('#estimated-gas-val').html(estimatedGas);
+            });
+        }
+
+        function estimateGas(web3, acc, contractAddr, data, cb) {
+            // console.log(acc, contractAddr, data)
+            web3.eth.estimateGas({
+                from: acc, 
+                data: data,
+                to: contractAddr
+            }, cb);
+          }
+
+        $('#estimate_gas_btn').on('click', e => {
+            setEstimationGs();
+        })
