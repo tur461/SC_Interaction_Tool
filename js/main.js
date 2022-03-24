@@ -12,6 +12,7 @@ let _ip_values = [];
 let _ip_names = [];
 let _ip_types = [];
 let _meth_name = '';
+let nahiJaneDo = false;
 
 let contractAddr = '0x0AE675C5917c1dab986A17a145D6D5dA00a8bD3f';
 let address = '0x47e18C4d1e23027FEd38D9a1CCA82E11a7D42cab';
@@ -298,18 +299,18 @@ function reset_params() {
             targetId = '#contract-prep-container';
             getContractAddress();
             loadAbiFromTextArea();
-          
-            if(!contractAddress) {
-                console.log('please provide contract address');
-                _s('No contract address provided!', 'e')
-                return;
-            }
-              
-            if(!ABI) {
-                console.log('No ABI provided');
-                _s('No ABI provided!', 'e');
-                return;
-            }
+                
+                if(!contractAddress) {
+                    console.log('please provide contract address');
+                    _s('No contract address provided!', 'e')
+                    return;
+                }
+                
+                if(!ABI) {
+                    console.log('No ABI provided');
+                    _s('No ABI provided!', 'e');
+                    return;
+                }
 
 
             if (typeof window.ethereum !== 'undefined') {
@@ -322,6 +323,16 @@ function reset_params() {
                 console.log('connecting to external wallet');
                 _web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
             }  
+        }
+
+        function connect_wallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                console.log('MetaMask is installed!');
+                ethereum.enable();
+                return !0;
+            }
+            console.log('no metamask found!');
+            return !1;
         }
 
         async function connect() {
@@ -376,6 +387,112 @@ function reset_params() {
                 $(ip).attr('name') !== 'gaslimit' &&
                 _ip_values.push($(ip).val())
             })
+        }
+
+        let Address = {
+            owner: '0x84fF670281055e51FE317c0A153AAc2D26619798',
+            saleToken: '0x6DF6a2D4ce73Fc937625Db2E5fb5762F248B30F3',
+            stableCoin: '0x83D685Ed8D7E2591c998bF2c87e01c5795Df55fd',
+            beneficiary: '0x84fF670281055e51FE317c0A153AAc2D26619798',
+            stakingContract: '0x018b32b3cfaA0D74953B50309f82e57B4bAEdaE2',
+        }
+        let AddressT = {
+            'Address': {
+                'owner': 'address',
+                'saleToken': 'address',
+                'stableCoin': 'address',
+                'beneficiary': 'address',
+                'stakingContract': 'address',
+            }
+        }
+
+        let Timing = {
+            pubStart: `${new Date().getTime()}`,
+            pvtStart: `${new Date().getTime()}`,
+            pubDuration: `${new Date().getTime()}`,
+            pvtDuration: `${new Date().getTime()}`,
+        }
+        let TimingT = {
+            'Timing': {
+                'pubStart': 'uint256',
+                'pvtStart': 'uint256',
+                'pubDuration': 'uint256',
+                'pvtDuration': 'uint256',
+            }
+        }
+        let Limit = {
+            pvtN: '5',
+            pubN: '0',
+            hardcap: '235000',
+            softcap: '0',
+            totalSupply: '10000',
+            maxAllocationShare: '240',
+            profitPercentage: '300',
+        }
+
+        let LimitT = {
+            'Limit': {
+                'pvtN': 'uint256',
+                'pubN': 'uint256',
+                'hardcap': 'uint256',
+                'softcap': 'uint256',
+                'totalSupply': 'uint256',
+                'maxAllocationShare': 'uint256',
+                'profitPercentage': 'uint16',
+            }
+        }
+
+        $('#create-pool').on('click', createPool);
+
+        function createPool(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            // connect_wallet()
+            // connect(true);
+            getContractAddress();
+            console.log('1');
+            _web3 = _web3 || new Web3(window.ethereum);
+            console.log('2', _web3.eth.abi);
+            let adminC = contractAddress;
+            let f = 'createPool((address,address,address,address,address),(uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256,uint256,uint256,uint16),bool,bool)';
+            let sig = _web3.eth.abi.encodeFunctionSignature(f);
+            let p1 = [AddressT, TimingT, LimitT, 'bool', 'bool'];
+            let p2 = [Address, Timing, Limit, 'false', 'true'];
+            console.log('3', p1, p2);
+            let params = _web3.eth.abi.encodeParameters(p1, p2).substring(2);
+            console.log('4');
+            let data_bin = sig + params;
+            
+            console.log(data_bin);
+            let txObj = {
+                to: adminC,
+                from: accs[0],
+                data: data_bin,
+                //gas:  '',
+            }
+            //let ct = new _web3.eth.Contract(ABI, '0x2969ff4c56D5f33A8Bf36F20150f82B2a2a1F52C');
+            console.log('transaction is being processed..');
+
+            // _web3.eth.estimateGas({
+            //     to: adminC,
+            //     from: accs[0],
+            //     data: data_bin,
+            // })
+            // .then(gas => {
+            //     console.log('estimating gas:', gas);
+            //     txObj['gas'] = gas.toString();
+                _web3.eth.sendTransaction(txObj, function(err, dat) {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log('success:', dat);
+                });
+            // })
+            // .catch(err => console.log('estimategas error:', err));
+
+            
+            
         }
 
         function setEstimationGs() {
