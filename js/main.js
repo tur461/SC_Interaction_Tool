@@ -450,17 +450,17 @@ function reset_params() {
             // connect_wallet()
             // connect(true);
             getContractAddress();
-            console.log('1');
+            
             _web3 = _web3 || new Web3(window.ethereum);
-            console.log('2', _web3.eth.abi);
+            
             let adminC = contractAddress;
             let f = 'createPool((address,address,address,address,address),(uint256,uint256,uint256,uint256),(uint256,uint256,uint256,uint256,uint256,uint256,uint16),bool,bool)';
             let sig = _web3.eth.abi.encodeFunctionSignature(f);
             let p1 = [AddressT, TimingT, LimitT, 'bool', 'bool'];
-            let p2 = [Address, Timing, Limit, 'false', 'true'];
-            console.log('3', p1, p2);
+            let p2 = [Address, Timing, Limit, false, true];
+            
             let params = _web3.eth.abi.encodeParameters(p1, p2).substring(2);
-            console.log('4');
+            
             let data_bin = sig + params;
             
             console.log(data_bin);
